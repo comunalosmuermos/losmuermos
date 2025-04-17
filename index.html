@@ -3,9 +3,33 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" href="https://github.com/itsfelipeh/image/blob/main/logomuni.png?raw=true" type="image/png">
   <title>Muy pronto - Los Muermos</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.1/css/all.min.css" />
   <style>
+    /* Efecto inicial de carga */
+    body {
+      opacity: 0;
+      transition: opacity 0.5s ease-out;
+    }
+    
+    body.loaded {
+      opacity: 1;
+    }
+    
+    /* Animaciones para elementos al hacer scroll */
+    .scroll-animate {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+    }
+    
+    .scroll-animate.animated {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    
+    /* Resto de estilos */
     body {
       font-family: 'Segoe UI', sans-serif;
       background-color: #f8f9fa;
@@ -19,10 +43,17 @@
       margin-bottom: 20px;
     }
 
-    .video-container img {
+    .video-container {
+      margin: 20px auto;
+      max-width: 800px;
+    }
+
+    .video-container iframe {
       width: 100%;
-      max-width: 640px;
+      min-height: 450px;
+      border: none;
       border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
     }
 
     h1 {
@@ -150,70 +181,106 @@
         font-size: 1.8em;
       }
 
+      .video-container iframe {
+        min-height: 250px;
+      }
+
       input[type="email"],
       button {
         width: 90%;
       }
-
-      .video-container img {
-        max-width: 100%;
-      }
     }
     .social-icons a {
-  text-decoration: none; /* Quita el subrayado */
-}
+      text-decoration: none;
+    }
 
     .social-icon i {
-    font-size: 32px;
-    transition: transform 0.3s;
+      font-size: 32px;
+      transition: transform 0.3s;
     }
 
     .social-icon:hover i {
-     transform: scale(1.2); /* Pequeña animación al pasar el mouse */
+      transform: scale(1.2);
     }
     .social-icons a:link,
     .social-icons a:visited,
     .social-icons a:hover,
     .social-icons a:active {
-    color: inherit;
-}
+      color: inherit;
+    }
   </style>
 </head>
 <body>
-  <img src="https://github.com/itsfelipeh/image/blob/main/logomuni.png?raw=true" class="logo" alt="Logo Municipalidad" width="200">
+  <img src="https://github.com/itsfelipeh/image/blob/main/logomuni.png?raw=true" class="logo scroll-animate" alt="Logo Municipalidad" width="200">
 
-  <div class="video-container">
-    <div id="youtube-player">
-      <p>Cargando video...</p>
-    </div>
+  <div class="video-container scroll-animate">
+    <iframe src="https://www.youtube.com/embed/x386KcXjyD4?start=3&autoplay=0&rel=0&controls=1&showinfo=0" 
+            title="Video de YouTube" 
+            frameborder="0" 
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+            allowfullscreen>
+    </iframe>
   </div>
 
-  <h1>Muy pronto.</h1>
-  <p>Mientras tanto, suscríbete a nuestro boletín mensual para mantenerte actualizado.</p>
+  <h1 class="scroll-animate">Muy pronto.</h1>
+  <p class="scroll-animate">Mientras tanto, suscríbete a nuestro boletín mensual para mantenerte actualizado.</p>
 
-  <form id="newsletter-form">
+  <form id="newsletter-form" class="scroll-animate">
     <input type="email" id="email" placeholder="Correo electrónico" required>
     <br>
     <button type="submit">Suscribirme</button>
   </form>
-  <p id="response-message"></p>
+  <p id="response-message" class="scroll-animate"></p>
 
-  <div class="map-container">
+  <div class="map-container scroll-animate">
     <h2>Encuéntranos aquí</h2>
     <iframe src="https://www.google.com/maps/embed?pb=!1m10!1m8!1m3!1d2323.4949342145887!2d-73.46495733595975!3d-41.39949717243685!3m2!1i1024!2i768!4f13.1!5e1!3m2!1ses-419!2scl!4v1744899077314!5m2!1ses-419!2scl" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
   </div>
 
-<!-- Iconos Sociales -->
-<div class="social-icons">
-    <a href="https://www.facebook.com/muni.muermos/" target="_blank" class="social-icon facebook">
+  <!-- Iconos Sociales -->
+  <div class="social-icons scroll-animate">
+    <a href="https://facebook.com/tu-pagina" target="_blank" class="social-icon facebook">
       <i class="fab fa-facebook"></i>
     </a>
-    <a href="https://www.instagram.com/munimuermos/" target="_blank" class="social-icon instagram">
+    <a href="https://instagram.com/tu-cuenta" target="_blank" class="social-icon instagram">
       <i class="fab fa-instagram"></i>
     </a>
   </div>
 
   <script>
+    // Mostrar contenido con transición inicial
+    document.addEventListener('DOMContentLoaded', function() {
+      setTimeout(function() {
+        document.body.classList.add('loaded');
+      }, 100);
+      
+      // Inicializar el observador de scroll
+      initScrollAnimation();
+    });
+
+    // Animación al hacer scroll (se activa cada vez que el elemento entra/sale de vista)
+    function initScrollAnimation() {
+      const elements = document.querySelectorAll('.scroll-animate');
+      
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('animated');
+          } else {
+            entry.target.classList.remove('animated');
+          }
+        });
+      }, {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+      });
+
+      elements.forEach(element => {
+        observer.observe(element);
+      });
+    }
+
+    // Formulario de newsletter
     document.getElementById("newsletter-form").addEventListener("submit", function(e) {
       e.preventDefault();
       const email = document.getElementById("email").value;
@@ -230,48 +297,6 @@
         document.getElementById("response-message").textContent = "Ocurrió un error. Intenta nuevamente.";
       });
     });
-  </script>
-
-  <script>
-    const apiKey = "AIzaSyBrqHQkP07jShqiItHByp0dR5uwqGwGkJo";
-    const channelId = "UCug3k-eIjuvHhRSIur11Icw";
-
-    async function fetchLiveOrLatestVideo() {
-      try {
-        const liveRes = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${channelId}&eventType=live&type=video&key=${apiKey}`);
-        const liveData = await liveRes.json();
-
-        let videoId;
-
-        if (liveData.items && liveData.items.length > 0) {
-          videoId = liveData.items[0].id.videoId;
-        } else {
-          const latestRes = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${channelId}&maxResults=1&order=date&type=video&key=${apiKey}`);
-          const latestData = await latestRes.json();
-
-          if (latestData.items && latestData.items.length > 0) {
-            videoId = latestData.items[0].id.videoId;
-          }
-        }
-
-        if (videoId) {
-          document.getElementById("youtube-player").innerHTML = `
-            <iframe width="100%" height="360" 
-              src="https://www.youtube.com/embed/${videoId}?autoplay=0&rel=0"
-              title="YouTube video player" frameborder="0"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-              allowfullscreen>
-            </iframe>
-          `;
-        } else {
-          document.getElementById("youtube-player").innerHTML = "<p>No se encontraron videos en este momento.</p>";
-        }
-      } catch (error) {
-        document.getElementById("youtube-player").innerHTML = "<p>Error al cargar el video.</p>";
-      }
-    }
-
-    fetchLiveOrLatestVideo();
   </script>
 </body>
 </html>
