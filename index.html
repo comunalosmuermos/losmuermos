@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Muy pronto - Los Muermos</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f8f9fa;
+      color: #212529;
+      text-align: center;
+      margin: 0;
+      padding: 40px 20px;
+    }
+
+    .logo {
+      margin-bottom: 20px;
+    }
+
+    .video-container img {
+      width: 100%;
+      max-width: 640px;
+      border-radius: 10px;
+    }
+
+    h1 {
+      font-size: 2.5em;
+      color: #111;
+      margin-bottom: 10px;
+    }
+
+    p {
+      color: #555;
+      font-size: 1.1em;
+      margin: 0 10px;
+    }
+
+    form {
+      margin-top: 25px;
+    }
+
+    input[type="email"] {
+      padding: 12px 15px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      width: 260px;
+      max-width: 90%;
+    }
+
+    button {
+      padding: 12px 24px;
+      font-size: 16px;
+      background-color: #0069d9;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      margin-top: 10px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    #response-message {
+      margin-top: 15px;
+      font-weight: bold;
+      color: green;
+    }
+
+    .map-container {
+      margin-top: 50px;
+      max-width: 800px;
+      margin-left: auto;
+      margin-right: auto;
+      padding: 0 10px;
+    }
+
+    iframe {
+      width: 100%;
+      height: 400px;
+      border: 0;
+      border-radius: 10px;
+    }
+
+    @media (max-width: 600px) {
+      h1 {
+        font-size: 1.8em;
+      }
+
+      input[type="email"] {
+        width: 90%;
+      }
+
+      button {
+        width: 90%;
+      }
+
+      .video-container img {
+        max-width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <img src="https://github.com/itsfelipeh/image/blob/main/logomuni.png?raw=true" class="logo" alt="Logo Municipalidad" width="200">
+
+  <div class="video-container">
+    <div id="youtube-player">
+      <p>Cargando video...</p>
+    </div>
+  </div>
+
+  <h1>Muy pronto.</h1>
+  <p>Mientras tanto, suscríbete a nuestro boletín mensual para mantenerte actualizado.</p>
+
+  <form id="newsletter-form">
+    <input type="email" id="email" placeholder="Correo electrónico" required>
+    <br>
+    <button type="submit">Suscribirme</button>
+  </form>
+  <p id="response-message"></p>
+
+  <div class="map-container">
+    <h2>Encuéntranos aquí</h2>
+    <iframe src="https://www.google.com/maps/embed?pb=!1m10!1m8!1m3!1d2323.4949342145887!2d-73.46495733595975!3d-41.39949717243685!3m2!1i1024!2i768!4f13.1!5e1!3m2!1ses-419!2scl!4v1744899077314!5m2!1ses-419!2scl" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+  </div>
+
+  <script>
+    document.getElementById("newsletter-form").addEventListener("submit", function(e) {
+      e.preventDefault();
+      const email = document.getElementById("email").value;
+
+      fetch("https://script.google.com/macros/s/AKfycbwd8rcDGOOykEu_pI7aH810GDwOn8jvpwN-YHa4BET3E1LNLJ9cuCWdRldJEPJzxvE4/exec?email=" + encodeURIComponent(email), {
+        method: "POST"
+      })
+      .then(response => response.text())
+      .then(result => {
+        document.getElementById("response-message").textContent = "¡Gracias por suscribirte! Revisa tu correo.";
+        document.getElementById("newsletter-form").reset();
+      })
+      .catch(error => {
+        document.getElementById("response-message").textContent = "Ocurrió un error. Intenta nuevamente.";
+      });
+    });
+  </script>
+  <script>
+    const apiKey = "AIzaSyADB7SgtxuKxxyReexEy1ljTn25pqYoDrg";
+    const channelId = "UCug3k-eIjuvHhRSIur11Icw";
+  
+    async function fetchLiveOrLatestVideo() {
+      try {
+        // 1. Intentamos buscar un video en vivo
+        const liveRes = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${channelId}&eventType=live&type=video&key=${apiKey}`);
+        const liveData = await liveRes.json();
+  
+        let videoId;
+  
+        if (liveData.items && liveData.items.length > 0) {
+          videoId = liveData.items[0].id.videoId;
+        } else {
+          // 2. Si no hay en vivo, buscamos el último video subido
+          const latestRes = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${channelId}&maxResults=1&order=date&type=video&key=${apiKey}`);
+          const latestData = await latestRes.json();
+  
+          if (latestData.items && latestData.items.length > 0) {
+            videoId = latestData.items[0].id.videoId;
+          }
+        }
+  
+        if (videoId) {
+          document.getElementById("youtube-player").innerHTML = `
+            <iframe width="100%" height="360" 
+              src="https://www.youtube.com/embed/${videoId}?autoplay=0&rel=0"
+              title="YouTube video player" frameborder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+              allowfullscreen>
+            </iframe>
+          `;
+        } else {
+          document.getElementById("youtube-player").innerHTML = "<p>No se encontraron videos en este momento.</p>";
+        }
+      } catch (error) {
+        document.getElementById("youtube-player").innerHTML = "<p>Error al cargar el video.</p>";
+      }
+    }
+  
+    fetchLiveOrLatestVideo();
+  </script>
+</body>
+</html>
